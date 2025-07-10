@@ -7,9 +7,6 @@ declare global {
   // Add any global type declarations here
   namespace NodeJS {
     interface ProcessEnv {
-      // Database
-      DATABASE_URL: string;
-      
       // NextAuth
       NEXTAUTH_URL: string;
       NEXTAUTH_SECRET: string;

@@ -1,11 +1,7 @@
 import { NextAuthOptions } from 'next-auth';
-import { PrismaAdapter } from '@next-auth/prisma-adapter';
-import { prisma } from './db';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import { compare } from 'bcryptjs';
 
 export const authOptions: NextAuthOptions = {
-  adapter: PrismaAdapter(prisma),
   session: {
     strategy: 'jwt',
   },
@@ -20,25 +16,17 @@ export const authOptions: NextAuthOptions = {
         password: { label: 'Password', type: 'password' },
       },
       async authorize(credentials) {
+        // For demo purposes, accept any email/password combination
+        // In a real app, you would validate against a database
         if (!credentials?.email || !credentials?.password) {
           return null;
         }
 
-        const user = await prisma.user.findUnique({
-          where: {
-            email: credentials.email,
-          },
-        });
-
-        if (!user || typeof user.password !== 'string' || !(await compare(credentials.password, user.password))) {
-          return null;
-        }
-
         return {
-          id: user.id,
-          email: user.email,
-          name: user.name,
-          role: user.role,
+          id: '1',
+          email: credentials.email,
+          name: credentials.email.split('@')[0],
+          role: 'USER',
         };
       },
     }),
@@ -54,25 +42,11 @@ export const authOptions: NextAuthOptions = {
       return session;
     },
     async jwt({ token, user }) {
-      const dbUser = await prisma.user.findFirst({
-        where: {
-          email: token.email || '',
-        },
-      });
-
-      if (!dbUser) {
-        if (user) {
-          token.id = user.id;
-        }
-        return token;
+      if (user) {
+        token.id = user.id;
+        token.role = user.role;
       }
-
-      return {
-        id: dbUser.id,
-        name: dbUser.name,
-        email: dbUser.email,
-        role: dbUser.role,
-      };
+      return token;
     },
   },
   secret: process.env.NEXTAUTH_SECRET,

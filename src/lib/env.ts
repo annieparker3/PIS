@@ -12,9 +12,6 @@ function getEnvVar(name: string): string {
   return value;
 }
 
-// Database
-const DATABASE_URL = getEnvVar('DATABASE_URL');
-
 // NextAuth
 const NEXTAUTH_URL = getEnvVar('NEXTAUTH_URL');
 const NEXTAUTH_SECRET = getEnvVar('NEXTAUTH_SECRET');
@@ -32,9 +29,6 @@ const IS_PRODUCTION = NODE_ENV === 'production';
 const IS_TEST = NODE_ENV === 'test';
 
 export const env = {
-  // Database
-  DATABASE_URL,
-  
   // NextAuth
   NEXTAUTH_URL,
   NEXTAUTH_SECRET,
